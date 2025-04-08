@@ -1,7 +1,4 @@
 
-![image](https://github.com/user-attachments/assets/95c565c6-8010-4934-b678-d5e6c286b404)
-
-
 Session 1: Introduction and Vibe Check
 
 Assignment
