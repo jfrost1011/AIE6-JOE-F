@@ -41,7 +41,14 @@ Try uploading a text file and asking some questions!
 
 Upload a PDF file of the recent DeepSeek-R1 paper and ask the following questions:
 
-1. What is RL and how does it help reasoning?
-2. What is the difference between DeepSeek-R1 and DeepSeek-R1-Zero?
-3. What is this paper about?
+1. What is RL and how does it help reasoning? Chainlit Chatbot answer:
+Reinforcement Learning (RL) is a type of machine learning where an agent learns to make decisions by taking actions in an environment to maximize some notion of cumulative reward. In the context of reasoning, RL helps by enabling models to explore various paths or strategies (known as chain-of-thought or CoT) to solve complex problems. 
+
+Through RL, models can improve their reasoning capabilities by receiving rewards for effective reasoning patterns and aligning with human preferences, even without relying on supervised fine-tuning (SFT) as a preliminary step. The process allows the models, such as DeepSeek-R1-Zero, to develop advanced reasoning behaviors like self-verification and reflection, ultimately resulting in significantly enhanced performance on reasoning benchmarks.
+
+2. What is the difference between DeepSeek-R1 and DeepSeek-R1-Zero? Chainlit Chatbot answer:
+   DeepSeek-R1-Zero is a model that shows consistent improvement in solving reasoning tasks through reinforcement learning, whereas DeepSeek-R1 does not exhibit the same level of improvement and capabilities. DeepSeek-R1 is noted to have certain limitations in general capabilities, particularly in function calling, multi-turn interactions, complex role-playing, and JSON output, which DeepSeek-R1-Zero is designed to address. Additionally, DeepSeek-R1 is sensitive to prompting and may use English for reasoning even if the query is in other languages, while improvements in DeepSeek-R1-Zero aim to enhance performance in these areas.
+   
+3. What is this paper about? Chainlit Chatbot answer:
+I don't know the answer.
 
