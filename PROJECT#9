@@ -1,0 +1,144 @@
+🚀 Fine-Tuning Embeddings for Enhanced RAG (Retrieval-Augmented Generation)
+This repository explicitly demonstrates the complete process of fine-tuning embedding models specifically for improved RAG performance, using structured tasks, activities, questions, and evaluations.
+
+📌 Overview of What We Did
+We followed an explicit, structured approach through several tasks and activities, clearly outlined below:
+
+✅ Question #1: Nuance in Embedding Training
+Question:
+"Describe the nuance between using Q&D pairs to train the embedding model vs. inter-document pairs/related sentences. What caveats does this approach have? Special considerations for questions?"
+
+Answer:
+Explicitly pairing questions with documents creates specialized embeddings but risks narrow focus; inter-document pairs capture broader context but may lack specificity. Choose clear, relevant questions carefully to mitigate these issues.
+
+🚧 Task 1: Dependencies and Boilerplate
+Explicitly set up Python environment, dependencies, and API keys for OpenAI and Hugging Face.
+
+📂 Task 2: Loading Data
+Clearly loaded and structured data from Simon Willison's blogs (2023 and 2024) to explicitly prepare it for fine-tuning.
+
+🧱 Task 3: Constructing a Fine-tuning Dataset
+Explicitly generated synthetic question-document pairs using LangChain, preparing clearly formatted datasets for fine-tuning.
+
+🛠️ Activity #1: Python Code Implementation
+Created Python functions explicitly generating synthetic questions linked clearly with their contexts.
+
+🚀 Task 4: Fine-tuning snowflake-arctic-embed-l
+Explicitly fine-tuned Snowflake’s Arctic embedding model using carefully chosen loss functions for domain-specific context embedding.
+
+🔍 Activity #2: Loss Functions and Hugging Face
+Explained loss functions (MultipleNegativesRankingLoss, TripletLoss) explicitly.
+
+Uploaded our clearly fine-tuned embeddings explicitly to Hugging Face for easy public access and future use.
+
+🧪 Task 5: Evaluating Retriever Performance
+Conducted explicit initial vibe checks visually comparing base and fine-tuned retrievers for noticeable quality differences.
+
+🎯 Vibe Check Task 1:
+Clearly compared initial qualitative outputs of Base vs. Fine-tuned RAG systems.
+
+❓ Question #2: Best LCEL RAG Chain
+Question:
+"Which LCEL RAG Chain answered the questions better, and why?"
+
+Answer:
+Fine-tuned RAG explicitly provided slightly better answer relevancy but showed lower faithfulness in some cases, requiring further optimization.
+
+📊 Final Task 2: RAGAS Evaluation (Detailed Code)
+🔧 Why & How:
+Explicitly evaluated the fine-tuned vs. base embeddings using RAGAS metrics (context precision, recall, faithfulness, relevancy).
+
+Clearly structured, prepared, and formatted data explicitly for evaluation.
+
+📝 Explicit Code Implementation (Fully Working):
+# Dependencies explicitly installed
+!pip install -qU ragas langchain openai sentence-transformers faiss-cpu rapidfuzz
+
+# Libraries imported explicitly
+from ragas import evaluate
+from ragas.metrics import context_precision, context_recall, faithfulness, answer_relevancy
+from ragas.testset import TestsetGenerator
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_community.embeddings import HuggingFaceEmbeddings
+import pandas as pd
+from datasets import Dataset
+
+# Explicit LLM and embeddings setup
+llm = ChatOpenAI(model="gpt-4-turbo-preview")
+embed_model = OpenAIEmbeddings(model="text-embedding-3-small")
+
+# Synthetic test set explicitly generated
+generator = TestsetGenerator.from_langchain(llm, embed_model)
+documents = training_documents
+synthetic_testset = generator.generate_with_langchain_docs(documents, testset_size=20)
+
+# Convert to HuggingFace dataset explicitly
+synthetic_testset_df = synthetic_testset.to_pandas()
+synthetic_testset_df["question"] = synthetic_testset_df["user_input"]
+
+# Retrievers setup explicitly (base & fine-tuned embeddings from Hugging Face)
+base_retriever = FAISS.from_documents(documents, embed_model).as_retriever(k=6)
+finetuned_embed_model = HuggingFaceEmbeddings(
+    model_name="jfrost10/legal-ft-854fc258-b1eb-43af-9790-58c018e846be"
+)
+finetuned_retriever = FAISS.from_documents(documents, finetuned_embed_model).as_retriever(k=6)
+
+# Retrieve contexts explicitly
+def retrieve_contexts(question, retriever):
+    return [doc.page_content for doc in retriever.get_relevant_documents(question)]
+
+synthetic_testset_df["retrieved_contexts"] = synthetic_testset_df["question"].apply(lambda q: retrieve_contexts(q, base_retriever))
+synthetic_testset_df["finetuned_retrieved_contexts"] = synthetic_testset_df["question"].apply(lambda q: retrieve_contexts(q, finetuned_retriever))
+
+# Explicitly generating answers
+base_rag_chain = (
+    {"context": base_retriever, "question": RunnablePassthrough()} 
+    | ChatPromptTemplate.from_template("Context:\n{context}\n\nQuestion:\n{question}\n\nAnswer:") 
+    | llm | StrOutputParser()
+)
+finetuned_rag_chain = (
+    {"context": finetuned_retriever, "question": RunnablePassthrough()} 
+    | ChatPromptTemplate.from_template("Context:\n{context}\n\nQuestion:\n{question}\n\nAnswer:") 
+    | llm | StrOutputParser()
+)
+
+small_testset_df = synthetic_testset_df.head(5).copy()
+small_testset_df["base_response"] = small_testset_df["question"].apply(lambda q: base_rag_chain.invoke(q))
+small_testset_df["finetuned_response"] = small_testset_df["question"].apply(lambda q: finetuned_rag_chain.invoke(q))
+
+# RAGAS evaluation explicitly conducted
+base_results = evaluate(
+    dataset=Dataset.from_pandas(small_testset_df.rename(columns={"base_response": "response"})),
+    metrics=[context_precision, context_recall, faithfulness, answer_relevancy],
+    llm=llm, embeddings=embed_model, raise_exceptions=False
+)
+finetuned_results = evaluate(
+    dataset=Dataset.from_pandas(small_testset_df.rename(columns={"finetuned_response": "response"})),
+    metrics=[context_precision, context_recall, faithfulness, answer_relevancy],
+    llm=llm, embeddings=finetuned_embed_model, raise_exceptions=False
+)
+
+# Explicitly print results
+print("Base RAG Results:", base_results.to_pandas())
+print("\nFine-tuned RAG Results:", finetuned_results.to_pandas())
+
+🗒️ 3 Lessons Learned:
+Fine-tuning explicitly improves relevancy but needs careful handling for faithfulness.
+
+Explicit synthetic data generation accelerates creating targeted fine-tuning datasets.
+
+RAGAS explicitly quantifies retriever performance beyond intuition.
+
+❓ 3 Open Questions (for Future Exploration):
+How to explicitly improve faithfulness with fine-tuned embeddings?
+
+How to explicitly optimize synthetic questions' quality?
+
+Would inter-document pair fine-tuning explicitly outperform Q&D pair training?
+
+📖 Conclusion:
+This explicit workflow clearly highlights the importance of thoughtful embedding fine-tuning, detailed evaluations, and iterative improvements to achieve robust, performant RAG systems.
