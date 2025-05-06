@@ -1,0 +1,65 @@
+# AI Exercise: GRPO Training and Model Fine-Tuning
+
+## Overview
+
+This exercise focused on understanding advanced concepts in AI model training, specifically involving double quantization, LoRA fine-tuning, and reward-based training using the GRPO algorithm. We completed two main tasks, each accompanied by specific questions designed to enhance understanding and practical implementation.
+
+---
+
+## Task #1: Model Architecture and Fine-Tuning
+
+### Question 1: What exactly is happening in the double quantization step?
+
+**Answer:**
+Double quantization compresses a model twice. Initially, it reduces precision to shrink the model size. A second quantization further compresses the data, significantly reducing storage and computational requirements, while preserving acceptable performance.
+
+### Question 2: Labeling LLaMA Architecture
+
+* **Layer Norm:** `(input_layernorm): LlamaRMSNorm()`, `(post_attention_layernorm): LlamaRMSNorm()`, `(norm): LlamaRMSNorm()`
+* **Feed Forward:** `Feed Forward Layer`
+* **Masked Multi Self-Attention:** `Masked Multi Self-Attention Layer`
+* **Text & Position Embed:** `Text & Position Embedding Layer`
+* **Text Prediction:** `Text Prediction Layer`
+
+### Question 3: What, in your own words, is LoRA doing?
+
+**Answer:**
+LoRA fine-tuning is like adjusting the seasoning in a recipe slightly rather than cooking the entire dish from scratch. It modifies just a small set of model parameters, efficiently tailoring the model's behavior to a new task without extensive retraining.
+
+---
+
+## Task #2: GRPO-Based Training with Reward Functions
+
+In this task, we:
+
+* Prepared training data using GSM8K questions and answers.
+* Applied a set of structured reward functions to guide the model towards correct and well-formatted responses.
+* Configured and executed a GRPO (Generative Reward and Preference Optimization) training session, focusing on improving the model based on reward maximization rather than simple error minimization.
+
+### Question 4: Describe what the following parameters are doing:
+
+* **`warmup_ratio`:** Gradually increases the learning rate at the start of training, stabilizing the model's initial training phase.
+* **`learning_rate`:** Determines how quickly or slowly the model updates its parameters during training.
+* **`lr_scheduler_type`:** Controls the pattern of how the learning rate changes over time (e.g., cosine decay gradually reduces the learning rate after an initial peak).
+
+---
+
+## Training Outcomes and Reward Graph
+
+We trained the model using GRPO, observing a distinct upward trend in reward values over training steps, indicating effective learning and model adaptation to the defined reward structure. The training graph demonstrates an initial noisy period followed by a clear upward trend around the 100th-150th steps, showcasing the expected behavior of reinforcement-based fine-tuning.
+
+
+
+---
+
+## Key Lessons Learned
+
+1. Effective use of multiple reward functions can significantly steer model behavior without explicitly teaching reasoning steps.
+2. Double quantization provides substantial efficiency improvements, maintaining model utility at reduced computational costs.
+3. LoRA is highly effective for fine-tuning, making targeted parameter adjustments feasible and computationally economical.
+
+## Further Questions for Exploration
+
+1. Optimal strategies for balancing reward function contributions.
+2. Techniques for managing noisy reward signals during RL training.
+3. The practical impact of hardware improvements on RL training efficiency and model convergence.
